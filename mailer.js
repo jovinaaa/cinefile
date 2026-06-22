@@ -28,7 +28,9 @@ const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;          // <-- the 1
 // "transporter" is Nodemailer's term for the object that actually
 // connects to Gmail's mail server and sends messages through it.
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // false for port 587, true would be for port 465
   auth: {
     user: GMAIL_ADDRESS,
     pass: GMAIL_APP_PASSWORD
