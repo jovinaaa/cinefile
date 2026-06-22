@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CineFile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ===== GUEST NAVBAR (shown when browsing, not logged in) ===== -->
+  <nav id="guest-navbar" style="display:none;">
+    <span class="nav-brand">CineFile</span>
+    <div class="nav-links">
+      <button onclick="openAuthModal('login');">Log In</button>
+      <button onclick="openAuthModal('signup');">Sign Up</button>
+    </div>
+  </nav>
+
+  <!-- ===== USER NAVBAR (shown only for logged-in regular users) ===== -->
+  <nav id="navbar" style="display:none;">
+    <span class="nav-brand">CineFile</span>
+    <div class="nav-links">
+      <span id="user-greeting"></span>
+      <button onclick="renderHome(); showPage('home');">Browse</button>
+      <button onclick="openMyBookings();">My Bookings</button>
+      <button onclick="handleLogout();">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== ADMIN NAVBAR (shown only when admin is logged in) ===== -->
+  <nav id="admin-navbar" style="display:none;">
+    <span class="nav-brand admin-brand">CineFile <span class="admin-tag">Admin</span></span>
+    <div class="nav-links">
+      <button onclick="showAdminPanel('users');">Users</button>
+      <button onclick="showAdminPanel('bookings');">Bookings</button>
+      <button onclick="showAdminPanel('reviews');">Reviews</button>
+      <button onclick="showAdminPanel('timings');">Show Timings</button>
+      <button onclick="showAdminPanel('screenings');">Screenings</button>
+      <button onclick="handleAdminLogout();">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== THEATER NAVBAR (shown only when a theater is logged in) ===== -->
+  <nav id="theater-navbar" style="display:none;">
+    <span class="nav-brand theater-brand">CineFile <span class="theater-tag">Theater Partner</span></span>
+    <div class="nav-links">
+      <span id="theater-greeting"></span>
+      <button onclick="showTheaterDashboard();">My Submissions</button>
+      <button onclick="handleTheaterLogout();">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== SIDEBAR ICON -- opens the Theater entry point =====
+       A small fixed button on the side of the screen, visible on
+       every guest/user page, that a theater owner can click to
+       reach their own separate login/signup. -->
+  <button id="theater-sidebar-icon" onclick="openTheaterAuthModal('login');" title="Theater Partner Login">
+    <span class="sidebar-icon-symbol">&#127916;</span>
+    <span class="sidebar-icon-label">Theaters</span>
+  </button>
+
+
+  <!-- ============================================================
+       USER AUTH MODAL
+       ============================================================ -->
+  <div id="auth-modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="auth-box modal-box">
+      <button class="modal-close-btn" onclick="closeAuthModal();">&times;</button>
+      <h1 class="brand-title">CineFile</h1>
+      <p class="brand-sub" id="auth-modal-reason">Your movie, your seat, your night.</p>
+
+      <div id="login-form">
+        <h2>Log In</h2>
+        <input type="text"     id="login-username" placeholder="Username"/>
+        <input type="password" id="login-password" placeholder="Password"/>
+        <p class="error-msg"   id="login-error"></p>
+        <button class="btn-primary" onclick="handleLogin();">Log In</button>
+      </div>
+
+      <div id="signup-form" style="display:none;">
+        <h2>Sign Up</h2>
+        <input type="text"     id="signup-username" placeholder="Choose a username"/>
+        <input type="email"    id="signup-email"    placeholder="Your email address"/>
+        <input type="password" id="signup-password" placeholder="Choose a password"/>
+        <p class="error-msg"   id="signup-error"></p>
+        <button class="btn-primary" onclick="handleSignup();">Create Account</button>
+      </div>
+
+      <button class="btn-link" id="toggle-auth-btn" onclick="toggleAuthMode();">
+        Don't have an account? Sign up
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       THEATER AUTH MODAL (completely separate login system)
+       ============================================================ -->
+  <div id="theater-auth-modal-overlay" class="modal-overlay" style="display:none;">
+    <div class="auth-box modal-box theater-modal-box">
+      <button class="modal-close-btn" onclick="closeTheaterAuthModal();">&times;</button>
+      <h1 class="brand-title theater-brand-title">CineFile <span class="theater-tag">Partner</span></h1>
+      <p class="brand-sub">Submit your screenings for approval.</p>
+
+      <div id="theater-login-form">
+        <h2>Theater Log In</h2>
+        <input type="text"     id="theater-login-name"     placeholder="Theater Name"/>
+        <input type="password" id="theater-login-password" placeholder="Password"/>
+        <p class="error-msg"   id="theater-login-error"></p>
+        <button class="btn-primary theater-btn" onclick="handleTheaterLogin();">Log In</button>
+      </div>
+
+      <div id="theater-signup-form" style="display:none;">
+        <h2>Register Your Theater</h2>
+        <input type="text"     id="theater-signup-name"     placeholder="Theater Name"/>
+        <input type="email"    id="theater-signup-email"    placeholder="Theater Email"/>
+        <input type="password" id="theater-signup-password" placeholder="Choose a Password"/>
+        <p class="error-msg"   id="theater-signup-error"></p>
+        <button class="btn-primary theater-btn" onclick="handleTheaterSignup();">Register Theater</button>
+      </div>
+
+      <button class="btn-link" id="toggle-theater-auth-btn" onclick="toggleTheaterAuthMode();">
+        New theater? Register here
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ===== HOME PAGE ===== -->
+  <div id="page-home" class="page">
+    <div class="home-header">
+      <h2>Now Showing</h2>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search by title or genre..."
+          oninput="handleSearch();"/>
+      </div>
+    </div>
+
+    <!-- Catalog tabs -- Now Showing (curated) vs Theater Screenings (submitted) -->
+    <div class="catalog-tabs">
+      <button id="catalog-tab-curated"  class="catalog-tab-btn active-tab" onclick="switchCatalog('curated');">Now Showing</button>
+      <button id="catalog-tab-theaters" class="catalog-tab-btn" onclick="switchCatalog('theaters');">Theater Screenings</button>
+    </div>
+
+    <div id="genre-filters" class="genre-row"></div>
+    <div id="movie-grid"   class="movie-grid"></div>
+
+    <!-- Theater screenings grid, grouped by movie title -->
+    <div id="theater-screenings-grid" class="theater-screenings-grid" style="display:none;"></div>
+  </div>
+
+
+  <!-- ===== MOVIE DETAIL PAGE (curated movies) ===== -->
+  <div id="page-detail" class="page" style="display:none;">
+    <button class="btn-back" onclick="showPage('home');">Back to Browse</button>
+    <div class="detail-layout">
+      <div class="detail-poster-wrap">
+        <img id="detail-poster" src="" alt="" class="detail-poster-img"/>
+        <div id="detail-poster-fallback" class="poster-fallback large" style="display:none;"></div>
+      </div>
+      <div class="detail-info">
+        <h2 id="detail-title"></h2>
+        <p  id="detail-genre"      class="detail-meta"></p>
+        <p  id="detail-desc"       class="detail-desc"></p>
+        <p  id="detail-price"      class="detail-price"></p>
+        <p  id="detail-avg-rating" class="detail-rating"></p>
+        <div id="detail-timings" class="detail-timings"></div>
+        <div class="rating-section">
+          <p>Rate this movie:</p>
+          <div id="star-rating" class="stars"></div>
+        </div>
+        <button class="btn-primary" onclick="openBooking();">Book Tickets</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== THEATER SCREENING DETAIL PAGE (submitted movies) =====
+       Shows ONE movie title with EVERY approved theater playing
+       it listed underneath -- the BookMyShow-style layout. -->
+  <div id="page-screening-detail" class="page" style="display:none;">
+    <button class="btn-back" onclick="switchCatalog('theaters'); showPage('home');">Back to Browse</button>
+    <div class="detail-layout">
+      <div class="detail-poster-wrap">
+        <img id="screening-detail-poster" src="" alt="" class="detail-poster-img"/>
+        <div id="screening-detail-poster-fallback" class="poster-fallback large" style="display:none;"></div>
+      </div>
+      <div class="detail-info">
+        <h2 id="screening-detail-title"></h2>
+        <p  id="screening-detail-genre" class="detail-meta"></p>
+        <p  id="screening-detail-desc"  class="detail-desc"></p>
+        <p  id="screening-detail-avg-rating" class="detail-rating"></p>
+
+        <div class="rating-section">
+          <p>Rate this movie:</p>
+          <div id="screening-star-rating" class="stars"></div>
+        </div>
+
+        <h3 class="theaters-list-heading">Available at these theaters:</h3>
+        <div id="screening-theaters-list" class="screening-theaters-list"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== BOOKING PAGE (shared by curated movies AND theater screenings) ===== -->
+  <div id="page-booking" class="page" style="display:none;">
+    <button class="btn-back" id="booking-back-btn" onclick="showPage('detail');">Back</button>
+    <div class="booking-box">
+      <h2>Book Tickets</h2>
+      <h3 id="booking-title"></h3>
+      <p  id="booking-theater-name" class="booking-meta theater-meta-tag" style="display:none;"></p>
+      <p  id="booking-price-info" class="booking-meta"></p>
+
+      <label for="timing-select">Select Show Time:</label>
+      <select id="timing-select" class="timing-select"></select>
+
+      <label for="seat-count" style="margin-top:16px;">Number of Seats (max 10):</label>
+      <input type="number" id="seat-count" min="1" max="10" value="1"
+        oninput="updateTotal();"/>
+
+      <p id="booking-total" class="booking-total"></p>
+      <button class="btn-primary" id="confirm-booking-btn" onclick="confirmBooking();">Confirm Booking</button>
+    </div>
+  </div>
+
+
+  <!-- ===== CONFIRMATION PAGE ===== -->
+  <div id="page-confirmation" class="page" style="display:none;">
+    <div class="confirm-box">
+      <h2>Booking Confirmed</h2>
+      <div class="confirm-details">
+        <p><strong>Movie:</strong>     <span id="conf-movie"></span></p>
+        <p><strong>Show Time:</strong> <span id="conf-timing"></span></p>
+        <p><strong>Seats:</strong>     <span id="conf-seats"></span></p>
+        <p><strong>Total Paid:</strong><span id="conf-total"></span></p>
+        <p><strong>Date:</strong>      <span id="conf-date"></span></p>
+        <p id="conf-id" class="conf-id"></p>
+        <p class="conf-id" style="margin-top:6px;">A confirmation email has been sent to your registered email address.</p>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn-primary"   onclick="openMyBookings();">My Bookings</button>
+        <button class="btn-secondary" onclick="renderHome(); showPage('home');">Browse More</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===== MY BOOKINGS PAGE ===== -->
+  <div id="page-mybookings" class="page" style="display:none;">
+    <button class="btn-back" onclick="renderHome(); showPage('home');">Back to Browse</button>
+    <h2>My Bookings</h2>
+    <div id="bookings-list" class="bookings-list"></div>
+  </div>
+
+
+  <!-- ============================================================
+       THEATER DASHBOARD
+       Where a logged-in theater submits new movies and views the
+       status of their past submissions.
+       ============================================================ -->
+  <div id="page-theater-dashboard" class="page" style="display:none;">
+    <div class="admin-header theater-header">
+      <h2>Theater Dashboard</h2>
+      <p class="admin-subtitle">Submit a movie screening for admin approval, or check your past submissions.</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button id="theater-tab-submit"  class="tab-btn active-tab" onclick="showTheaterTab('submit');">Submit a Screening</button>
+      <button id="theater-tab-mine"    class="tab-btn" onclick="showTheaterTab('mine');">My Submissions</button>
+    </div>
+
+    <!-- SUBMIT FORM -->
+    <div id="theater-panel-submit" class="admin-panel">
+      <div class="submission-form">
+        <h3>Movie Details</h3>
+        <label for="sub-movie-title">Movie Title:</label>
+        <input type="text" id="sub-movie-title" placeholder="e.g. Oppenheimer"/>
+
+        <label for="sub-genre">Genre:</label>
+        <input type="text" id="sub-genre" placeholder="e.g. Drama, Action, Sci-Fi"/>
+
+        <label for="sub-description">Description:</label>
+        <textarea id="sub-description" rows="3" placeholder="A short description of the movie"></textarea>
+
+        <label for="sub-poster">Poster Image URL:</label>
+        <input type="text" id="sub-poster" placeholder="https://..."/>
+
+        <label for="sub-price">Ticket Price (Rs.):</label>
+        <input type="number" id="sub-price" placeholder="e.g. 180"/>
+
+        <h3 style="margin-top:20px;">Show Timings</h3>
+        <p class="form-helper-text">Add every showtime you want to offer for this movie.</p>
+        <div class="timing-form-row">
+          <input type="text" id="sub-timing-input" placeholder="e.g. 6:30 PM" maxlength="20"/>
+          <button class="btn-primary small-btn" onclick="addSubmissionTiming();">Add Timing</button>
+        </div>
+        <div id="sub-timings-list" class="timing-tags-row"></div>
+
+        <p class="error-msg" id="submission-error" style="margin-top:14px;"></p>
+        <button class="btn-primary theater-btn" style="margin-top:10px;" onclick="submitScreening();">Submit for Approval</button>
+      </div>
+    </div>
+
+    <!-- MY SUBMISSIONS LIST -->
+    <div id="theater-panel-mine" class="admin-panel" style="display:none;">
+      <div id="theater-mine-list"></div>
+    </div>
+  </div>
+
+
+  <!-- ===== ADMIN DASHBOARD ===== -->
+  <div id="page-admin" class="page" style="display:none;">
+    <div class="admin-header">
+      <h2>Admin Dashboard</h2>
+      <p class="admin-subtitle">Manage users, bookings, reviews, show timings, and theater screenings.</p>
+    </div>
+
+    <div class="admin-tabs">
+      <button id="tab-users"      class="tab-btn" onclick="showAdminPanel('users');">Users</button>
+      <button id="tab-bookings"   class="tab-btn" onclick="showAdminPanel('bookings');">Bookings</button>
+      <button id="tab-reviews"    class="tab-btn" onclick="showAdminPanel('reviews');">Reviews</button>
+      <button id="tab-timings"    class="tab-btn" onclick="showAdminPanel('timings');">Show Timings</button>
+      <button id="tab-screenings" class="tab-btn" onclick="showAdminPanel('screenings');">Screenings</button>
+    </div>
+
+    <div id="admin-panel-users" class="admin-panel" style="display:none;">
+      <p id="admin-user-count" class="panel-summary"></p>
+      <div id="admin-users-list"></div>
+    </div>
+
+    <div id="admin-panel-bookings" class="admin-panel" style="display:none;">
+      <div id="admin-stats" class="stats-row"></div>
+      <div id="admin-bookings-list"></div>
+    </div>
+
+    <div id="admin-panel-reviews" class="admin-panel" style="display:none;">
+      <p class="panel-summary">All star ratings submitted by users.</p>
+      <div id="admin-reviews-list"></div>
+    </div>
+
+    <div id="admin-panel-timings" class="admin-panel" style="display:none;">
+      <div class="timing-form">
+        <h3>Add Show Time</h3>
+        <div class="timing-form-row">
+          <select id="timing-movie-select" class="timing-select"></select>
+          <input  type="text" id="timing-input" placeholder="e.g. 10:00 AM" maxlength="20"/>
+          <button class="btn-primary small-btn" onclick="addTiming();">Add</button>
+        </div>
+        <p class="error-msg" id="timing-error"></p>
+      </div>
+      <h3 style="margin-top:24px; margin-bottom:12px;">Current Schedule</h3>
+      <div id="admin-timings-list"></div>
+    </div>
+
+    <!-- NEW: ADMIN SCREENINGS PANEL -- approve or reject theater submissions -->
+    <div id="admin-panel-screenings" class="admin-panel" style="display:none;">
+      <p class="panel-summary">Review movie screenings submitted by theater partners.</p>
+      <div id="admin-screenings-list"></div>
+    </div>
+
+  </div><!-- end admin page -->
+
+
+  <script src="script.js"></script>
+</body>
+</html>

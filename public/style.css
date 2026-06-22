@@ -1,0 +1,482 @@
+/* ============================================================
+   CINEFILE - style.css  (v4 — adds Theater Submission system)
+   Pastel theme, minimal, no animations, clean and readable.
+   ============================================================ */
+
+:root {
+  --bg:            #fdf6f0;
+  --surface:       #ffffff;
+  --accent:        #c9a0dc;
+  --accent-dark:   #a87cc0;
+  --text:          #2d2d2d;
+  --text-light:    #777;
+  --border:        #e8dff5;
+  --pink:          #f7c5d5;
+  --green:         #b5e5c0;
+  --red:           #e57373;
+  --admin-bg:      #f3eeff;
+  --admin-accent:  #7c4daa;
+  --theater-bg:    #f5efe6;
+  --theater-accent:#a87cc0;
+  --font-display:  'Playfair Display', serif;
+  --font-body:     'Lato', sans-serif;
+  --radius:        10px;
+  --shadow:        0 2px 10px rgba(0,0,0,0.07);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ---- NAVBARS (shared base) ---- */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--accent-dark);
+  letter-spacing: 1px;
+}
+.admin-brand { color: var(--admin-accent); }
+.theater-brand, .theater-brand-title { color: var(--theater-accent); }
+
+.admin-tag, .theater-tag {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.admin-tag   { background: var(--admin-bg);   color: var(--admin-accent); }
+.theater-tag { background: var(--theater-bg); color: var(--theater-accent); }
+
+.nav-links { display: flex; align-items: center; gap: 12px; }
+.nav-links span { color: var(--text-light); font-size: 0.9rem; }
+.nav-links button {
+  background: none;
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.nav-links button:hover { background-color: var(--border); }
+
+/* ---- PAGE WRAPPER ---- */
+.page { max-width: 1100px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* ---- BUTTONS ---- */
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 4px;
+}
+.btn-primary:hover { background-color: var(--accent-dark); }
+.btn-primary.theater-btn { background-color: var(--theater-accent); }
+.btn-primary.theater-btn:hover { background-color: var(--accent-dark); }
+
+.btn-secondary {
+  background: none;
+  color: var(--accent-dark);
+  border: 1px solid var(--accent);
+  padding: 10px 26px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.btn-secondary:hover { background-color: var(--border); }
+
+.btn-back {
+  background: none; border: none; color: var(--accent-dark);
+  cursor: pointer; font-size: 0.9rem; margin-bottom: 20px; padding: 0;
+  text-decoration: underline; font-family: var(--font-body);
+}
+.btn-link {
+  background: none; border: none; color: var(--accent-dark);
+  cursor: pointer; font-size: 0.85rem; margin-top: 16px;
+  text-decoration: underline; font-family: var(--font-body);
+}
+.small-btn { width: auto; padding: 8px 18px; font-size: 0.9rem; margin-top: 0; }
+
+/* ---- INPUTS ---- */
+input[type="text"], input[type="password"], input[type="number"], input[type="email"], textarea {
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+}
+input:focus, textarea:focus { border-color: var(--accent); }
+select {
+  padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+  font-family: var(--font-body); font-size: 0.9rem; background: var(--bg);
+  color: var(--text); outline: none; cursor: pointer;
+}
+select:focus { border-color: var(--accent); }
+.error-msg { color: #d9534f; font-size: 0.85rem; min-height: 18px; margin-bottom: 8px; }
+.muted { color: var(--text-light); }
+
+label {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin-bottom: 4px;
+}
+
+/* ---- AUTH BOX (shared by user and theater modals) ---- */
+.auth-box {
+  max-width: 400px;
+  margin: 80px auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.brand-title { font-family: var(--font-display); font-size: 2.2rem; color: var(--accent-dark); margin-bottom: 6px; }
+.brand-sub { color: var(--text-light); font-size: 0.9rem; margin-bottom: 28px; }
+.auth-box h2 { font-size: 1.2rem; margin-bottom: 16px; color: var(--text); }
+
+/* ---- MODAL OVERLAY (shared) ---- */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-box { position: relative; margin: 0; max-height: 90vh; overflow-y: auto; }
+.modal-close-btn {
+  position: absolute; top: 14px; right: 18px;
+  background: none; border: none; font-size: 1.4rem;
+  color: var(--text-light); cursor: pointer; line-height: 1;
+}
+.theater-modal-box { border: 2px solid var(--theater-bg); }
+
+/* ---- SIDEBAR ICON (theater entry point) ---- */
+#theater-sidebar-icon {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+#theater-sidebar-icon:hover { background: var(--theater-bg); border-color: var(--theater-accent); }
+.sidebar-icon-symbol { font-size: 1.3rem; }
+.sidebar-icon-label { display: none; }
+
+/* Tooltip that appears above the icon on hover */
+#theater-sidebar-icon::after {
+  content: "Theater Partner Login";
+  position: absolute;
+  bottom: 62px;
+  right: 0;
+  background: var(--text);
+  color: white;
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+#theater-sidebar-icon:hover::after { opacity: 1; }
+
+/* ---- HOME PAGE ---- */
+.home-header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+}
+.home-header h2 { font-family: var(--font-display); font-size: 1.6rem; }
+.search-bar input { width: 280px; margin-bottom: 0; }
+
+/* Catalog tabs -- Now Showing vs Theater Screenings */
+.catalog-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.catalog-tab-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.catalog-tab-btn.active-tab { background-color: var(--accent); color: white; border-color: var(--accent); }
+.catalog-tab-btn:hover:not(.active-tab) { background-color: var(--border); }
+
+.genre-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.genre-btn {
+  background: var(--surface); border: 1px solid var(--border); padding: 6px 16px;
+  border-radius: 20px; cursor: pointer; font-size: 0.85rem; color: var(--text); font-family: var(--font-body);
+}
+.genre-btn.active { background-color: var(--accent); color: white; border-color: var(--accent); }
+.genre-btn:hover:not(.active) { background-color: var(--border); }
+
+/* ---- MOVIE GRID (shared by curated + theater screenings) ---- */
+.movie-grid, .theater-screenings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+.movie-card {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  cursor: pointer; overflow: hidden; border: 1px solid var(--border);
+}
+.movie-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.11); }
+.movie-poster { width: 100%; height: 240px; object-fit: cover; display: block; }
+.poster-fallback {
+  width: 100%; height: 240px; background: var(--pink);
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; font-family: var(--font-display); font-size: 1rem;
+  color: var(--accent-dark); padding: 12px;
+}
+.poster-fallback.large { height: 320px; font-size: 1.2rem; border-radius: var(--radius); }
+.card-info { padding: 12px; }
+.card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+.card-meta { font-size: 0.8rem; color: var(--text-light); margin-bottom: 4px; }
+.card-rating { font-size: 0.8rem; color: var(--accent-dark); }
+
+/* ---- DETAIL PAGES (curated + theater screening) ---- */
+.detail-layout { display: flex; gap: 36px; flex-wrap: wrap; }
+.detail-poster-wrap { flex: 0 0 auto; }
+.detail-poster-img { width: 240px; height: 340px; object-fit: cover; border-radius: var(--radius); display: block; }
+.detail-info { flex: 1; min-width: 240px; }
+.detail-info h2 { font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 8px; }
+.detail-meta { color: var(--text-light); font-size: 0.9rem; margin-bottom: 14px; }
+.detail-desc { font-size: 0.95rem; line-height: 1.6; margin-bottom: 16px; }
+.detail-price { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--accent-dark); }
+.detail-rating { font-size: 0.9rem; color: var(--text-light); margin-bottom: 12px; }
+.detail-timings { margin-bottom: 16px; }
+.timings-label { font-size: 0.85rem; color: var(--text-light); margin-bottom: 6px; }
+
+.timing-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--border); color: var(--accent-dark);
+  border-radius: 20px; padding: 4px 12px; font-size: 0.82rem; margin: 3px 4px 3px 0;
+}
+
+.rating-section { margin-bottom: 20px; }
+.rating-section p { font-size: 0.9rem; margin-bottom: 6px; color: var(--text-light); }
+.stars { display: flex; gap: 6px; }
+.star { font-size: 1.5rem; cursor: pointer; color: #ccc; }
+.star.filled { color: #e6a817; }
+
+/* ---- THEATER ROWS on the screening detail page (BookMyShow style) ---- */
+.theaters-list-heading { font-size: 1.1rem; margin: 20px 0 10px; color: var(--theater-accent); }
+.screening-theaters-list { display: flex; flex-direction: column; gap: 12px; }
+.theater-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface); border: 1px solid var(--theater-bg);
+  border-radius: var(--radius); padding: 14px 18px; gap: 16px; flex-wrap: wrap;
+}
+.theater-row-info strong { font-size: 1rem; color: var(--text); display: block; margin-bottom: 4px; }
+.theater-row-price { font-size: 0.85rem; color: var(--theater-accent); font-weight: 700; display: block; margin-bottom: 6px; }
+.theater-row-timings { display: flex; flex-wrap: wrap; gap: 4px; }
+.theater-row .small-btn { width: auto; }
+.theater-meta-tag { color: var(--theater-accent); font-weight: 700; }
+
+/* ---- BOOKING PAGE ---- */
+.booking-box {
+  max-width: 440px; background: var(--surface); border-radius: var(--radius);
+  padding: 32px; box-shadow: var(--shadow); border: 1px solid var(--border);
+}
+.booking-box h2 { font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 6px; }
+.booking-box h3 { font-size: 1.1rem; margin-bottom: 8px; color: var(--accent-dark); }
+.booking-meta { color: var(--text-light); margin-bottom: 8px; font-size: 0.9rem; }
+.booking-box label { margin-top: 4px; }
+.booking-box input { width: 100px; margin-bottom: 16px; }
+.timing-select { width: 100%; margin-bottom: 8px; }
+.booking-total { font-size: 1.1rem; font-weight: 700; color: var(--accent-dark); margin: 16px 0; }
+
+/* ---- CONFIRMATION PAGE ---- */
+.confirm-box {
+  max-width: 480px; background: var(--surface); border-radius: var(--radius);
+  padding: 36px; box-shadow: var(--shadow); border: 1px solid var(--green);
+}
+.confirm-box h2 { font-family: var(--font-display); font-size: 1.6rem; color: #3a7a4e; margin-bottom: 20px; }
+.confirm-details p { font-size: 0.95rem; margin-bottom: 10px; }
+.conf-id { font-size: 0.8rem; color: var(--text-light); margin-top: 10px; }
+.confirm-actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.confirm-actions .btn-primary { width: auto; }
+
+/* ---- MY BOOKINGS PAGE ---- */
+.bookings-list { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
+.booking-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 22px; box-shadow: var(--shadow);
+}
+.booking-item h3 { font-size: 1.05rem; margin-bottom: 6px; color: var(--accent-dark); }
+.booking-item p { font-size: 0.88rem; color: var(--text-light); margin-bottom: 4px; }
+.booking-id { font-size: 0.78rem; color: #bbb; margin-top: 6px; }
+
+/* ============================================================
+   ADMIN DASHBOARD (also reused for Theater Dashboard layout)
+   ============================================================ */
+.admin-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--admin-bg); }
+.admin-header.theater-header { border-bottom-color: var(--theater-bg); }
+.admin-header h2 { font-family: var(--font-display); font-size: 1.8rem; color: var(--admin-accent); }
+.theater-header h2 { color: var(--theater-accent); }
+.admin-subtitle { color: var(--text-light); font-size: 0.9rem; margin-top: 4px; }
+
+.admin-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.tab-btn {
+  background: var(--surface); border: 1px solid var(--border); padding: 8px 20px;
+  border-radius: 20px; cursor: pointer; font-family: var(--font-body); font-size: 0.9rem; color: var(--text);
+}
+.tab-btn:hover { background-color: var(--admin-bg); }
+.tab-btn.active-tab { background-color: var(--admin-accent); color: white; border-color: var(--admin-accent); }
+
+.panel-summary { color: var(--text-light); font-size: 0.9rem; margin-bottom: 16px; }
+
+.stats-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+.stat-card {
+  background: var(--admin-bg); border-radius: var(--radius); padding: 18px 24px;
+  display: flex; flex-direction: column; gap: 4px; min-width: 140px; border: 1px solid var(--border);
+}
+.stat-number { font-size: 1.5rem; font-weight: 700; color: var(--admin-accent); }
+.stat-label { font-size: 0.8rem; color: var(--text-light); }
+
+.admin-table {
+  width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--surface);
+  border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+}
+.admin-table thead tr { background-color: var(--admin-bg); }
+.admin-table th { text-align: left; padding: 12px 14px; color: var(--admin-accent); font-weight: 700; border-bottom: 1px solid var(--border); }
+.admin-table td { padding: 11px 14px; border-bottom: 1px solid #f0eaf8; color: var(--text); }
+.admin-table tbody tr:last-child td { border-bottom: none; }
+.admin-table tbody tr:hover { background-color: #faf7ff; }
+
+.admin-delete-btn {
+  background: none; border: 1px solid var(--red); color: var(--red);
+  padding: 4px 12px; border-radius: 12px; cursor: pointer; font-size: 0.8rem; font-family: var(--font-body);
+}
+.admin-delete-btn:hover { background-color: #fdecea; }
+.admin-delete-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.review-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px 20px; margin-bottom: 14px; box-shadow: var(--shadow);
+}
+.review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.review-header strong { font-size: 1rem; color: var(--text); }
+.avg-badge { background: var(--admin-bg); color: var(--admin-accent); font-size: 0.82rem; padding: 3px 10px; border-radius: 12px; font-weight: 700; }
+.review-row { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-top: 1px solid #f5f0fc; }
+.review-user { font-size: 0.85rem; min-width: 100px; color: var(--text); }
+.review-stars { font-size: 1rem; color: #e6a817; letter-spacing: 1px; }
+.review-num { font-size: 0.82rem; color: var(--text-light); }
+
+.timing-form {
+  background: var(--admin-bg); border-radius: var(--radius); padding: 20px 24px;
+  margin-bottom: 8px; border: 1px solid var(--border);
+}
+.timing-form h3 { margin-bottom: 14px; font-size: 1rem; color: var(--admin-accent); }
+.timing-form-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.timing-form-row select { flex: 1; min-width: 160px; margin-bottom: 0; }
+.timing-form-row input { flex: 1; min-width: 120px; margin-bottom: 0; }
+
+.timing-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.timing-movie-name { font-size: 0.92rem; font-weight: 700; min-width: 160px; color: var(--text); }
+.timing-tags-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.timing-remove-btn { background: none; border: none; cursor: pointer; color: var(--accent-dark); font-size: 0.75rem; padding: 0; font-weight: 700; line-height: 1; }
+.timing-remove-btn:hover { color: var(--red); }
+
+/* ---- NEW: THEATER SUBMISSION FORM ---- */
+.submission-form {
+  background: var(--theater-bg);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  border: 1px solid var(--border);
+  max-width: 560px;
+}
+.submission-form h3 { color: var(--theater-accent); font-size: 1rem; margin-bottom: 10px; }
+.form-helper-text { font-size: 0.82rem; color: var(--text-light); margin-bottom: 10px; }
+
+/* ---- NEW: SUBMISSION STATUS CARDS (theater + admin views) ---- */
+.submission-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.submission-card.status-pending  { border-left: 4px solid #e0b84c; }
+.submission-card.status-approved { border-left: 4px solid var(--green); }
+.submission-card.status-rejected { border-left: 4px solid var(--red); }
+
+.submission-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+.submission-card-header strong { font-size: 1rem; }
+
+.status-badge {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 12px; letter-spacing: 0.5px;
+}
+.status-badge.status-pending  { background: #fdf3da; color: #a3791a; }
+.status-badge.status-approved { background: var(--green); color: #1d6b3a; }
+.status-badge.status-rejected { background: #fbdada; color: #a32a2a; }
+
+.submission-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.submission-actions .small-btn { width: auto; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 600px) {
+  .detail-layout { flex-direction: column; }
+  .detail-poster-img { width: 100%; height: 280px; }
+  .home-header { flex-direction: column; align-items: flex-start; }
+  .search-bar input { width: 100%; }
+  nav { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+  .admin-tabs { gap: 6px; }
+  .tab-btn { padding: 7px 14px; font-size: 0.82rem; }
+  .timing-form-row { flex-direction: column; }
+  .timing-form-row select, .timing-form-row input { width: 100%; }
+  #theater-sidebar-icon { right: 8px; padding: 10px 6px; }
+  .theater-row { flex-direction: column; align-items: flex-start; }
+  .theater-row .small-btn { width: 100%; }
+}
