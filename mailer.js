@@ -1,49 +1,42 @@
 // ============================================================
-// mailer.js
-// Handles sending real emails using Gmail's SMTP server, via
-// the Nodemailer library.
+// mailer.js  (SendGrid version)
 //
-// HOW THIS WORKS:
-// Gmail lets any app log in and send mail on your behalf, AS
-// LONG AS you give it an "App Password" instead of your real
-// Gmail password. You generated one of these in Google Account
-// > Security > App Passwords. Paste that 16-character code into
-// the GMAIL_APP_PASSWORD value below.
+// WHY THIS CHANGED FROM NODEMAILER:
+// The original version used Nodemailer to connect directly to
+// Gmail over SMTP (port 465, then port 587). That worked fine
+// locally, but failed on Render's free tier with a connection
+// timeout every time. This wasn't a bug in the code -- Render's
+// free web services block ALL outbound traffic to SMTP ports
+// (25, 465, 587), on every region, with no exception for valid
+// credentials. There was no SMTP-based fix available on the
+// free tier.
 //
-// SECURITY NOTE: In a real production app, you would NEVER type
-// a password directly into a code file like this -- you'd use
-// an "environment variable" instead (a way to keep secrets out
-// of your source code). We're hardcoding it here only because
-// this is a learning project and keeping it simple matters more
-// right now. If you ever upload this code to GitHub publicly,
-// remove your real password first.
+// SendGrid avoids this entirely because it doesn't use SMTP at
+// all from our side -- it sends mail over a normal HTTPS POST
+// request to SendGrid's API, the same way fetch() talks to our
+// own /api/bookings route. HTTPS traffic is never blocked, so
+// this works on Render's free tier without any restriction.
 // ============================================================
 
-const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 
-// ---- FILL THESE IN WITH YOUR OWN DETAILS ----
-const GMAIL_ADDRESS      = process.env.GMAIL_ADDRESS;   // <-- your Gmail address
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD;          // <-- the 16-char App Password (no spaces)
+// ---- FILL THESE IN ----
+// SENDGRID_API_KEY: generated in SendGrid under Settings > API Keys
+// SENDER_EMAIL: the address you verified as a "Single Sender" in
+//               SendGrid -- this MUST match exactly, or SendGrid
+//               rejects the send with a 403 Forbidden error.
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const SENDER_EMAIL      = process.env.SENDER_EMAIL;
 
-// "transporter" is Nodemailer's term for the object that actually
-// connects to Gmail's mail server and sends messages through it.
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // false for port 587, true would be for port 465
-  auth: {
-    user: GMAIL_ADDRESS,
-    pass: GMAIL_APP_PASSWORD
-  }
-});
+sgMail.setApiKey(SENDGRID_API_KEY);
 
 // Sends a booking confirmation email.
 // `booking` is the same object server.js builds after a booking
 // is confirmed -- it already has movieTitle, timing, seats, etc.
 async function sendBookingConfirmation(toEmail, booking) {
-  const mailOptions = {
-    from: `"CineFile" <${GMAIL_ADDRESS}>`,
+  const msg = {
     to: toEmail,
+    from: SENDER_EMAIL, // must match your verified Single Sender in SendGrid
     subject: `Booking Confirmed - ${booking.movieTitle}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto;">
@@ -62,9 +55,11 @@ async function sendBookingConfirmation(toEmail, booking) {
     `
   };
 
-  // This actually connects to Gmail and sends the email.
-  // It's async because it involves a real network request.
-  await transporter.sendMail(mailOptions);
+  // sgMail.send() makes an HTTPS request to SendGrid's API and
+  // resolves once SendGrid has accepted the email for delivery.
+  // This is async because it's a real network request, same as
+  // the old transporter.sendMail() call was.
+  await sgMail.send(msg);
 }
 
 module.exports = { sendBookingConfirmation };
